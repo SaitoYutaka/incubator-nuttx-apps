@@ -109,58 +109,11 @@ static int led_daemon(int argc, char *argv[])
 
   /* Now loop forever, changing the LED set */
 
-  ledset       = 0;
+  ledset       = 'A';
   incrementing = true;
 
   for (; ; )
     {
-      userled_set_t newset;
-      userled_set_t tmp;
-
-      if (incrementing)
-        {
-          tmp = ledset;
-          do
-            {
-              tmp++;
-              newset = tmp & supported;
-            }
-          while (newset == ledset);
-
-          /* REVISIT: There are flaws in this logic.  It would not work
-           * correctly if there were spaces in the supported mask.
-           */
-
-          if (newset == 0)
-            {
-              incrementing = false;
-              continue;
-            }
-        }
-      else
-        {
-          /* REVISIT: There are flaws in this logic.  It would not work
-           * correctly if there were spaces in the supported mask.
-           */
-
-          if (ledset == 0)
-            {
-              incrementing = true;
-              continue;
-            }
-
-          tmp = ledset;
-          do
-            {
-              tmp--;
-              newset = tmp & supported;
-            }
-          while (newset == ledset);
-        }
-
-      ledset = newset;
-      printf("led_daemon: LED set 0x%02x\n", (unsigned int)ledset);
-
       ret = ioctl(fd, ULEDIOC_SETALL, ledset);
       if (ret < 0)
         {
@@ -171,6 +124,10 @@ static int led_daemon(int argc, char *argv[])
         }
 
       usleep(500*1000L);
+      ledset++;
+      if(ledset > 'Z'){
+        ledset = 'A';
+      }
     }
 
 errout_with_fd:
