@@ -47,7 +47,7 @@
 #include <sched.h>
 #include <errno.h>
 
-#include <nuttx/leds/userled.h>
+#include <nuttx/leds/microbit_led.h>
 
 /****************************************************************************
  * Private Data
@@ -114,7 +114,7 @@ static int led_daemon(int argc, char *argv[])
 
   for (; ; )
     {
-      ret = ioctl(fd, ULEDIOC_SETALL, ledset);
+      ret = ioctl(fd, ULEDIOC_PUTCHAR, ledset);
       if (ret < 0)
         {
           int errcode = errno;
