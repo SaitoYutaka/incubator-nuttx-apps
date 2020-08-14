@@ -1,6 +1,5 @@
 ############################################################################
-# apps/examples/leds/Make.defs
-# Adds selected applications to apps/ build
+# apps/examples/leds/Makefile
 #
 #   Copyright (C) 2016 Gregory Nutt. All rights reserved.
 #   Author: Gregory Nutt <gnutt@nuttx.org>
@@ -34,6 +33,17 @@
 #
 ############################################################################
 
-ifneq ($(CONFIG_EXAMPLES_MICROBIT_LEDS),)
-CONFIGURED_APPS += $(APPDIR)/examples/microbit_leds
-endif
+-include $(TOPDIR)/Make.defs
+
+# LED driver test built-in application info
+
+PROGNAME = $(CONFIG_EXAMPLES_MICROBIT_LEDS_PROGNAME)
+PRIORITY = $(CONFIG_EXAMPLES_MICROBIT_LEDS_PRIORITY)
+STACKSIZE = $(CONFIG_EXAMPLES_MICROBIT_LEDS_STACKSIZE)
+MODULE = $(CONFIG_EXAMPLES_MICROBIT_LEDS)
+
+# LED driver test
+
+MAINSRC = microbitleds_main.c
+
+include $(APPDIR)/Application.mk

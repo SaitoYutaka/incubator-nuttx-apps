@@ -46,6 +46,7 @@
 #include <fcntl.h>
 #include <sched.h>
 #include <errno.h>
+#include <sys/boardctl.h>
 
 #include <nuttx/leds/microbit_led.h>
 
@@ -70,12 +71,16 @@ static int led_daemon(int argc, char *argv[])
   bool incrementing;
   int ret;
   int fd;
+  char str[] = "hello world !\0";
+  struct ledinfo_s a;
+  a.ledset = str;
+  a.dir = SCROLL_H;
 
   /* Indicate that we are running */
 
   g_led_daemon_started = true;
   printf("led_daemon: Running\n");
-
+  (void)boardctl(BOARDIOC_INIT, 0);
   /* Open the LED driver */
 
   printf("led_daemon: Opening %s\n", CONFIG_EXAMPLES_MICROBIT_LEDS_DEVPATH);
@@ -112,22 +117,23 @@ static int led_daemon(int argc, char *argv[])
   ledset       = 'A';
   incrementing = true;
 
+  ioctl(fd, ULEDIOC_SCROLLHAR, (unsigned long)((uintptr_t)&a));
   for (; ; )
     {
-      ret = ioctl(fd, ULEDIOC_PUTCHAR, ledset);
-      if (ret < 0)
-        {
-          int errcode = errno;
-          printf("led_daemon: ERROR: ioctl(ULEDIOC_SUPPORTED) failed: %d\n",
-                 errcode);
-          goto errout_with_fd;
-        }
+  //     ret = ioctl(fd, ULEDIOC_PUTCHAR, ledset);
+  //     if (ret < 0)
+  //       {
+  //         int errcode = errno;
+  //         printf("led_daemon: ERROR: ioctl(ULEDIOC_SUPPORTED) failed: %d\n",
+  //                errcode);
+  //         goto errout_with_fd;
+  //       }
 
-      usleep(500*1000L);
-      ledset++;
-      if(ledset > 'Z'){
-        ledset = 'A';
-      }
+  //     usleep(500*1000L);
+  //     ledset++;
+  //     if(ledset > 'Z'){
+  //       ledset = 'A';
+  //     }
     }
 
 errout_with_fd:
